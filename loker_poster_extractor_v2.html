@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#1A4F59">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LA Extractor">
+<meta name="description" content="Auto-isi form lowongan dari foto poster">
+<link rel="manifest" href="data:application/json,{%22name%22:%22Loker%20Arsitek%20Extractor%22,%22short_name%22:%22LA%20Extractor%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%231A4F59%22,%22theme_color%22:%22%231A4F59%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20192%20192'%3E%3Crect%20width='192'%20height='192'%20rx='24'%20fill='%231A4F59'/%3E%3Crect%20x='24'%20y='24'%20width='144'%20height='144'%20rx='16'%20fill='%23D4942A'/%3E%3Ctext%20x='96'%20y='120'%20font-family='Georgia'%20font-size='72'%20font-weight='800'%20fill='white'%20text-anchor='middle'%3ELA%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
+<title>LA Extractor</title>
+<style>
+:root {
+  --teal: #2E7D8C;
+  --teal-dk: #1A4F59;
+  --teal-lt: #E8F4F6;
+  --amber: #D4942A;
+  --bg: #F2F4F5;
+  --white: #FFFFFF;
+  --text: #1C2B2D;
+  --muted: #6B7E80;
+  --border: #DDE4E5;
+  --success: #1D9E75;
+  --success-lt: #E8F7F2;
+  --danger: #DC2626;
+  --danger-lt: #FEF2F2;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: env(safe-area-inset-bottom, 60px); }
+
+.header { background: var(--teal-dk); padding: 14px 16px; padding-top: calc(14px + env(safe-area-inset-top, 0px)); display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+.logo { width: 34px; height: 34px; background: var(--amber); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; font-size: 13px; font-family: Georgia, serif; flex-shrink: 0; }
+.header-title { color: white; font-size: 15px; font-weight: 700; }
+.header-sub { color: rgba(255,255,255,0.55); font-size: 11px; margin-top: 1px; }
+
+/* INSTALL BANNER */
+.install-banner { background: var(--amber); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.install-banner-text { color: white; font-size: 12px; font-weight: 600; }
+.install-banner-btn { background: white; color: var(--amber); border: none; border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.install-banner-close { color: rgba(255,255,255,0.7); background: none; border: none; font-size: 18px; cursor: pointer; padding: 0 4px; }
+
+.container { max-width: 560px; margin: 0 auto; padding: 16px 14px; }
+
+.card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; }
+.card-header { padding: 13px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.card-icon { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.card-title { font-size: 13px; font-weight: 700; }
+.card-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.card-body { padding: 16px; }
+
+.api-wrap { background: var(--teal-dk); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; }
+.api-title { color: rgba(255,255,255,0.75); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.key-row { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
+.key-badge { background: var(--amber); color: white; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; flex-shrink: 0; min-width: 44px; text-align: center; }
+.key-input { flex: 1; padding: 9px 12px; border-radius: var(--radius-sm); border: none; font-size: 12px; background: rgba(255,255,255,0.12); color: white; outline: none; font-family: monospace; }
+.key-input::placeholder { color: rgba(255,255,255,0.35); font-family: -apple-system, sans-serif; }
+.key-input:focus { background: rgba(255,255,255,0.2); }
+.key-dot { width: 8px; height: 8px; border-radius: 50%; background: #6B7E80; flex-shrink: 0; }
+.key-dot.ok { background: #6EE7B7; }
+.btn-save { width: 100%; margin-top: 4px; padding: 9px; background: var(--amber); color: white; border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 700; cursor: pointer; }
+.key-info { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 8px; text-align: center; }
+.key-info span { color: #6EE7B7; font-weight: 700; }
+
+.upload-area { border: 2px dashed var(--border); border-radius: var(--radius); padding: 28px 16px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
+.upload-area.drag { border-color: var(--teal); background: var(--teal-lt); }
+.upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 16px; }
+.upload-icon { font-size: 32px; margin-bottom: 8px; }
+.upload-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.upload-sub { font-size: 12px; color: var(--muted); }
+.upload-cta { display: inline-block; margin-top: 10px; padding: 8px 22px; background: var(--teal); color: white; border-radius: 20px; font-size: 13px; font-weight: 600; }
+
+.preview-wrap { position: relative; border-radius: var(--radius-sm); overflow: hidden; background: #f0f0f0; margin-bottom: 8px; }
+.preview-img { width: 100%; max-height: 280px; object-fit: contain; display: block; }
+.preview-remove { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.55); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.urgent-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--danger-lt); color: var(--danger); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; margin-top: 4px; }
+
+.btn-proses { width: 100%; padding: 15px; background: var(--teal); color: white; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px; -webkit-appearance: none; }
+.btn-proses:active { background: var(--teal-dk); }
+.btn-proses:disabled { background: var(--muted); cursor: not-allowed; }
+
+.loading { display: none; text-align: center; padding: 28px; }
+.spinner { width: 38px; height: 38px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 13px; color: var(--muted); }
+
+.error-box { background: var(--danger-lt); border: 1px solid #FECACA; border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13px; color: var(--danger); display: none; margin-bottom: 14px; }
+
+.output-wrap { display: none; }
+.done-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--success-lt); color: var(--success); font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 20px; margin-bottom: 14px; }
+
+.tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+.tab { flex: 1; padding: 9px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: white; color: var(--muted); text-align: center; transition: all 0.2s; }
+.tab.active { background: var(--teal); color: white; border-color: var(--teal); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.field-group { margin-bottom: 12px; }
+.field-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+.field-tag { font-size: 10px; padding: 1px 7px; border-radius: 8px; font-weight: 600; }
+.tag-req { background: #FEF3C7; color: #92400E; }
+.tag-opt { background: var(--bg); color: var(--muted); }
+.field-val { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; position: relative; min-height: 40px; }
+.cbtn { position: absolute; top: 7px; right: 7px; background: var(--teal); color: white; border: none; border-radius: 6px; padding: 3px 10px; font-size: 11px; font-weight: 600; cursor: pointer; opacity: 0; transition: opacity 0.15s; }
+.field-val:hover .cbtn, .field-val:focus-within .cbtn { opacity: 1; }
+.cbtn.ok { background: var(--success); }
+
+/* Mobile: selalu tampilkan tombol copy */
+@media (max-width: 560px) { .cbtn { opacity: 1; } }
+
+.sep { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; padding: 8px 0 6px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+
+.caption-box { background: var(--teal-lt); border: 1px solid #B2D8E0; border-radius: var(--radius); padding: 14px; }
+.caption-label { font-size: 10px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.caption-text { font-size: 13px; line-height: 1.8; white-space: pre-wrap; word-break: break-word; }
+.btn-copy-cap { width: 100%; margin-top: 12px; padding: 10px; background: var(--teal); color: white; border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 700; cursor: pointer; -webkit-appearance: none; }
+.btn-copy-cap.ok { background: var(--success); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">LA</div>
+  <div>
+    <div class="header-title">Poster Extractor</div>
+    <div class="header-sub">Auto-isi form lowongan dari foto poster</div>
+  </div>
+</div>
+
+<!-- INSTALL BANNER (muncul kalau belum install) -->
+<div class="install-banner" id="installBanner" style="display:none">
+  <div class="install-banner-text">📲 Tambah ke Home Screen</div>
+  <button class="install-banner-btn" id="installBtn" onclick="installApp()">Install</button>
+  <button class="install-banner-close" onclick="dismissBanner()">×</button>
+</div>
+
+<div class="container">
+
+  <div class="api-wrap">
+    <div class="api-title">🔑 OpenAI API Keys — Fallback Otomatis</div>
+    <div class="key-row">
+      <div class="key-badge">Key 1</div>
+      <input class="key-input" id="k1" type="password" placeholder="sk-..." />
+      <div class="key-dot" id="kd1"></div>
+    </div>
+    <div class="key-row">
+      <div class="key-badge">Key 2</div>
+      <input class="key-input" id="k2" type="password" placeholder="sk-... (opsional)" />
+      <div class="key-dot" id="kd2"></div>
+    </div>
+    <div class="key-row">
+      <div class="key-badge">Key 3</div>
+      <input class="key-input" id="k3" type="password" placeholder="sk-... (opsional)" />
+      <div class="key-dot" id="kd3"></div>
+    </div>
+    <button class="btn-save" onclick="saveKeys()">Simpan Keys</button>
+    <div class="key-info" id="keyInfo">Belum ada key tersimpan</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon" style="background:#E8F4F6">📸</div>
+      <div>
+        <div class="card-title">Upload Poster Lowongan</div>
+        <div class="card-sub">Foto dari WA atau galeri HP</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div id="uploadArea" class="upload-area" ondragover="onDrag(event)" ondrop="onDrop(event)">
+        <input type="file" accept="image/*" id="fileInput" onchange="onFile(event)" />
+        <div class="upload-icon">🗂️</div>
+        <div class="upload-title">Pilih atau drag foto poster</div>
+        <div class="upload-sub">JPG · PNG · HEIC — langsung dari galeri</div>
+        <div class="upload-cta">Pilih Gambar</div>
+      </div>
+      <div id="previewWrap" style="display:none">
+        <div class="preview-wrap">
+          <img id="previewImg" class="preview-img" />
+          <button class="preview-remove" onclick="removeImg()">×</button>
+        </div>
+        <div id="urgentWrap" style="display:none">
+          <span class="urgent-badge">🚨 Urgently Hiring terdeteksi</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-box" id="errBox"></div>
+  <button class="btn-proses" id="btnProses" onclick="proses()">✨ Ekstrak & Generate</button>
+
+  <div class="loading" id="loadBox">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadTxt">Membaca poster...</div>
+  </div>
+
+  <div class="output-wrap" id="outputWrap">
+    <div class="done-badge">✅ Selesai — copy per field ke form website</div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('web')">📋 Form Website</div>
+      <div class="tab" onclick="switchTab('ig')">📱 Caption IG</div>
+    </div>
+
+    <div class="tab-content active" id="tab-web">
+      <div class="sep">📋 Posting Lowongan</div>
+      <div class="field-group">
+        <div class="field-label">Judul Lowongan <span class="field-tag tag-req">WAJIB</span></div>
+        <div class="field-val" id="fJudul"><button class="cbtn" onclick="cp('fJudul',this)">Copy</button></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Posisi <span class="field-tag tag-req">WAJIB</span></div>
+        <div class="field-val" id="fPosisi"><button class="cbtn" onclick="cp('fPosisi',this)">Copy</button></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Jenis Pekerjaan <span class="field-tag tag-req">WAJIB</span></div>
+        <div class="field-val" id="fJenis"><button class="cbtn" onclick="cp('fJenis',this)">Copy</button></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Batas Waktu <span class="field-tag tag-opt">opsional</span></div>
+        <div class="field-val" id="fDeadline"><button class="cbtn" onclick="cp('fDeadline',this)">Copy</button></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Gaji Min (angka) <span class="field-tag tag-opt">opsional</span></div>
+        <div class="field-val" id="fGajiMin"><button class="cbtn" onclick="cp('fGajiMin',this)">Copy</button></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Gaji Max (angka) <span class="field-tag tag-opt">opsional</span></div>
+        <div class="field-val" id="fGajiMax"><button class="cbtn" onclick="cp('fGajiMax',this)">Copy</button></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Hubungi / Email Lamaran <span class="field-tag tag-opt">opsional</span></div>
+        <div class="field-val" id="fHubungi"><button class="cbtn" onclick="cp('fHubungi',this)">Copy</button></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Kualifikasi <span class="field-tag tag-opt">biarkan kosong</span></div>
+        <div class="field-val" style="color:var(--muted);font-style:italic">Tidak perlu diisi — sudah ada di Deskripsi</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Deskripsi <span class="field-tag tag-opt">paste ke rich text editor</span></div>
+        <div class="field-val" id="fDeskripsi" style="min-height:140px"><button class="cbtn" onclick="cp('fDeskripsi',this)">Copy</button></div>
+      </div>
+      <div class="sep">🔍 SEO</div>
+      <div class="field-group">
+        <div class="field-label">Meta Deskripsi <span class="field-tag tag-opt">opsional</span></div>
+        <div class="field-val" id="fMeta"><button class="cbtn" onclick="cp('fMeta',this)">Copy</button></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Keyword <span class="field-tag tag-opt">pisah koma</span></div>
+        <div class="field-val" id="fKeyword"><button class="cbtn" onclick="cp('fKeyword',this)">Copy</button></div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-ig">
+      <div class="caption-box">
+        <div class="caption-label">📸 Caption Feed IG</div>
+        <div class="caption-text" id="capFeed">—</div>
+        <button class="btn-copy-cap" id="btnCopyCap" onclick="cpCap()">Copy Caption</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── PWA INSTALL ──
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!localStorage.getItem('pwa_dismissed')) {
+    document.getElementById('installBanner').style.display = 'flex';
+  }
+});
+
+function installApp() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(r => {
+    deferredPrompt = null;
+    document.getElementById('installBanner').style.display = 'none';
+  });
+}
+
+function dismissBanner() {
+  document.getElementById('installBanner').style.display = 'none';
+  localStorage.setItem('pwa_dismissed', '1');
+}
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  const swCode = `
+const CACHE = 'la-extractor-v1';
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/'])));
+  self.skipWaiting();
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys =>
+    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+  ));
+  self.clients.claim();
+});
+self.addEventListener('fetch', e => {
+  if (e.request.url.includes('openai.com')) return;
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('/')))
+  );
+});`;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+
+// ── UMR 2026 ──
+const UMR = {
+  'jakarta':5396761,'dki jakarta':5396761,
+  'surabaya':4961392,'sidoarjo':4961392,
+  'bandung':4482914,'kab bandung':4482914,
+  'semarang':3454827,
+  'yogyakarta':2465954,'jogja':2465954,'sleman':2465954,'bantul':2465954,
+  'medan':3769318,'makassar':3800000,
+  'denpasar':3096000,'bali':3096000,'badung':3096000,
+  'malang':3368000,'solo':2269460,'surakarta':2269460,
+  'bekasi':5691583,'tangerang':4590000,'tangerang selatan':4590000,'tangsel':4590000,
+  'depok':5195721,'bogor':4813988,'palembang':3800000,
+  'balikpapan':3500000,'samarinda':3200000,'pekanbaru':3294625,
+  'batam':4381172,'manado':3600000,'pontianak':3000000,
+  'banjarmasin':3282812,'padang':2994031,
+  'lampung':2893069,'bandar lampung':2893069,
+  'cirebon':2685560,'serang':4090799,'banten':4090799,'cilegon':4500000,
+};
+
+function getUMR(kota) {
+  if (!kota) return 3000000;
+  const k = kota.toLowerCase().trim();
+  for (const [key, val] of Object.entries(UMR)) {
+    if (k.includes(key) || key.includes(k)) return val;
+  }
+  return 3000000;
+}
+
+// ── API KEYS ──
+let keys = [];
+
+function saveKeys() {
+  const vals = ['k1','k2','k3'].map(id => document.getElementById(id).value.trim());
+  keys = vals.filter(k => k.startsWith('sk-'));
+  if (!keys.length) { alert('Minimal satu API key valid (diawali sk-)'); return; }
+  localStorage.setItem('la_keys', JSON.stringify(keys));
+  updateDots(vals);
+  document.getElementById('keyInfo').innerHTML = `<span>${keys.length} key</span> tersimpan · fallback otomatis aktif`;
+}
+
+function loadKeys() {
+  const saved = localStorage.getItem('la_keys');
+  if (!saved) return;
+  keys = JSON.parse(saved);
+  keys.forEach((k,i) => { document.getElementById(['k1','k2','k3'][i]).value = k; });
+  updateDots(keys);
+  document.getElementById('keyInfo').innerHTML = `<span>${keys.length} key</span> tersimpan · fallback otomatis aktif`;
+}
+
+function updateDots(vals) {
+  ['kd1','kd2','kd3'].forEach((id,i) => {
+    document.getElementById(id).className = 'key-dot' + (vals[i] && vals[i].startsWith('sk-') ? ' ok' : '');
+  });
+}
+
+// ── API CALL WITH FALLBACK ──
+async function callAPI(payload) {
+  if (!keys.length) throw new Error('Simpan API key dulu.');
+  let lastErr;
+  for (let i = 0; i < keys.length; i++) {
+    try {
+      setLoad(`Proses dengan Key ${i+1}...`);
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + keys[i] },
+        body: JSON.stringify(payload)
+      });
+      if (res.status === 429 || res.status === 402) { lastErr = new Error(`Key ${i+1} limit habis`); continue; }
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `Error ${res.status}`); }
+      document.getElementById('keyInfo').innerHTML = `Menggunakan <span>Key ${i+1}</span> · fallback aktif`;
+      return await res.json();
+    } catch(e) {
+      lastErr = e;
+      if (i < keys.length - 1) continue;
+    }
+  }
+  throw lastErr || new Error('Semua key gagal.');
+}
+
+// ── UPLOAD ──
+let imgB64 = null;
+
+function onFile(e) { if (e.target.files[0]) loadImg(e.target.files[0]); }
+function onDrag(e) { e.preventDefault(); document.getElementById('uploadArea').classList.add('drag'); }
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadArea').classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) loadImg(f);
+}
+function loadImg(file) {
+  const r = new FileReader();
+  r.onload = e => {
+    imgB64 = e.target.result.split(',')[1];
+    document.getElementById('previewImg').src = e.target.result;
+    document.getElementById('uploadArea').style.display = 'none';
+    document.getElementById('previewWrap').style.display = 'block';
+  };
+  r.readAsDataURL(file);
+}
+function removeImg() {
+  imgB64 = null;
+  document.getElementById('uploadArea').style.display = 'block';
+  document.getElementById('previewWrap').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('urgentWrap').style.display = 'none';
+  document.getElementById('outputWrap').style.display = 'none';
+}
+
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['web','ig'][i] === id));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+// ── MAIN ──
+async function proses() {
+  if (!keys.length) { showErr('Simpan API key dulu.'); return; }
+  if (!imgB64) { showErr('Upload poster dulu.'); return; }
+  hideErr();
+  showLoad('Membaca poster...');
+  try {
+    setLoad('Menganalisis poster...');
+    const data = await extractPoster();
+
+    if (!data.gaji_min || data.gaji_min === 0) {
+      const umr = getUMR(data.kota);
+      data.gaji_min = Math.round(umr * 0.90 / 100000) * 100000;
+      data.gaji_max = Math.round(umr * 1.00 / 100000) * 100000;
+      data.gaji_dari_umr = true;
+    }
+
+    const caption = buildCaption(data);
+    render(data, caption);
+    hideLoad();
+    document.getElementById('outputWrap').style.display = 'block';
+    document.getElementById('urgentWrap').style.display = data.urgently ? 'block' : 'none';
+    document.getElementById('outputWrap').scrollIntoView({ behavior:'smooth', block:'start' });
+
+  } catch(e) {
+    hideLoad();
+    showErr('❌ ' + e.message);
+  }
+}
+
+async function extractPoster() {
+  const prompt = `Kamu asisten portal lowongan kerja arsitektur Indonesia "Loker Arsitek".
+Analisis poster ini, ekstrak semua data sebagai JSON valid:
+
+{
+  "judul_lowongan": "Judul SEO-friendly, contoh: Lowongan Arsitek di DENZA Studio – Semarang",
+  "posisi": "Nama posisi singkat",
+  "jenis_pekerjaan": "Fulltime / Parttime / Freelance / Magang",
+  "deadline": "MM/DD/YYYY jika ada, atau string kosong",
+  "gaji_min": angka integer jika ada di poster atau 0,
+  "gaji_max": angka integer jika ada di poster atau 0,
+  "gaji_label": "Teks gaji di poster jika ada atau string kosong",
+  "hubungi": "Email atau WA untuk melamar atau string kosong",
+  "nama_perusahaan": "Nama perusahaan/studio",
+  "kota": "Kota lokasi kerja",
+  "akun_ig": "Akun IG perusahaan dengan @ jika ada atau string kosong",
+  "tipe_kandidat": "Fresh Graduate / Berpengalaman / Keduanya",
+  "lokasi_kerja": "WFO / WFH / Hybrid",
+  "urgently": true atau false,
+  "teks_posisi_poster": "Salin PERSIS teks deskripsi posisi dari poster apa adanya",
+  "deskripsi_perusahaan": "Deskripsi singkat perusahaan dari poster jika ada atau string kosong",
+  "kualifikasi_list": ["poin 1", "poin 2", "dst — array string tanpa bullet"],
+  "cara_melamar_teks": "Teks cara melamar dari poster selain email/format subjek",
+  "persyaratan_berkas": "Teks persyaratan berkas jika ada atau string kosong",
+  "format_subjek_email": "Format subjek email jika ada atau string kosong",
+  "keyword_seo": "3-5 kata kunci SEO pisah koma"
+}
+
+Respond HANYA dengan JSON valid, tanpa teks lain.`;
+
+  const res = await callAPI({
+    model: 'gpt-4.1',
+    max_tokens: 2000,
+    messages: [{
+      role: 'user',
+      content: [
+        { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + imgB64, detail: 'high' } },
+        { type: 'text', text: prompt }
+      ]
+    }]
+  });
+
+  const raw = res.choices[0].message.content.trim().replace(/```json|```/g,'').trim();
+  return JSON.parse(raw);
+}
+
+function buildDeskripsi(d) {
+  let out = '';
+  out += (d.deskripsi_perusahaan && d.deskripsi_perusahaan.trim())
+    ? d.deskripsi_perusahaan.trim() + '\n\n'
+    : `${d.nama_perusahaan} sedang membuka lowongan untuk posisi ${d.posisi}.\n\n`;
+
+  out += `Kualifikasi & Persyaratan\n`;
+  (d.kualifikasi_list || []).forEach(k => { out += `● ${k.replace(/^[-•●*]\s*/,'').trim()}\n`; });
+
+  if (d.persyaratan_berkas && d.persyaratan_berkas.trim()) {
+    out += `\nPersyaratan Berkas\n${d.persyaratan_berkas.trim()}\n`;
+  }
+
+  out += `\nCara Melamar\n`;
+  out += `Tertarik bergabung? Klik tombol "Lamar Sekarang" yang tersedia di halaman ini, atau kirimkan CV dan portofolio terbaik kamu ke:\n`;
+  if (d.cara_melamar_teks && d.cara_melamar_teks.trim()) out += `${d.cara_melamar_teks.trim()}\n`;
+  if (d.hubungi) out += `● Email: ${d.hubungi}\n`;
+  if (d.format_subjek_email) out += `● Format subjek: ${d.format_subjek_email}\n`;
+
+  out += `\nInformasi Perusahaan\n${d.nama_perusahaan}`;
+  if (d.kota) out += ` · ${d.kota}`;
+  if (d.akun_ig) out += ` · ${d.akun_ig}`;
+
+  return out.trim();
+}
+
+function buildCaption(d) {
+  const urgent = d.urgently ? '🚨 ' : '';
+  let out = `${urgent}● ${d.kota}\n\n`;
+
+  if (d.teks_posisi_poster && d.teks_posisi_poster.trim()) {
+    out += `${d.teks_posisi_poster.trim()}\n\n`;
+  }
+
+  out += `Kualifikasi & Persyaratan\n`;
+  (d.kualifikasi_list || []).forEach(k => { out += `● ${k.replace(/^[-•●*]\s*/,'').trim()}\n`; });
+
+  out += `\nCara Melamar\n`;
+  if (d.cara_melamar_teks && d.cara_melamar_teks.trim()) out += `${d.cara_melamar_teks.trim()}\n`;
+  if (d.hubungi) out += `● Email: ${d.hubungi}\n`;
+  if (d.format_subjek_email) out += `● Format subjek: ${d.format_subjek_email}\n`;
+
+  out += `\nInformasi Perusahaan\n${d.nama_perusahaan}`;
+  if (d.kota) out += ` · ${d.kota}`;
+  if (d.akun_ig) out += ` · ${d.akun_ig}`;
+
+  const kota = (d.kota || 'indonesia').toLowerCase().replace(/\s/g,'');
+  const posisi = (d.posisi || 'arsitek').toLowerCase().replace(/\s/g,'');
+  out += `\n\n#loker${posisi} #lowongan${posisi} #loker${kota} #lokerarsitek #arsitekturindonesia`;
+  if (d.akun_ig) out += `\n${d.akun_ig}`;
+
+  return out.trim();
+}
+
+function buildMeta(d) {
+  const gaji = d.gaji_label || (d.gaji_min ? `gaji Rp ${Number(d.gaji_min).toLocaleString('id-ID')}` : '');
+  return `Lowongan ${d.posisi} di ${d.nama_perusahaan}, ${d.kota}. ${d.tipe_kandidat}${gaji ? ', ' + gaji : ''}. Daftar sekarang di Loker Arsitek.`;
+}
+
+function render(d, caption) {
+  setF('fJudul', d.judul_lowongan || '—');
+  setF('fPosisi', d.posisi || '—');
+  setF('fJenis', d.jenis_pekerjaan || 'Fulltime');
+  setF('fDeadline', d.deadline || 'Tidak ada batas waktu');
+  setF('fGajiMin', d.gaji_min ? String(d.gaji_min) : '0');
+  setF('fGajiMax', d.gaji_max ? String(d.gaji_max) : '0');
+  setF('fHubungi', d.hubungi || 'Tidak tercantum');
+  setF('fDeskripsi', buildDeskripsi(d));
+  setF('fMeta', buildMeta(d));
+  setF('fKeyword', d.keyword_seo || '—');
+  document.getElementById('capFeed').textContent = caption;
+}
+
+function setF(id, val) {
+  const el = document.getElementById(id);
+  const btn = el.querySelector('.cbtn');
+  el.textContent = val;
+  if (btn) el.appendChild(btn);
+}
+
+function cp(id, btn) {
+  const el = document.getElementById(id);
+  let text = '';
+  el.childNodes.forEach(n => { if (n.nodeType === 3) text += n.textContent; });
+  navigator.clipboard.writeText(text.trim()).then(() => {
+    btn.textContent = '✓';
+    btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('ok'); }, 2000);
+  });
+}
+
+function cpCap() {
+  const btn = document.getElementById('btnCopyCap');
+  navigator.clipboard.writeText(document.getElementById('capFeed').textContent).then(() => {
+    btn.textContent = '✓ Tersalin!';
+    btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = 'Copy Caption'; btn.classList.remove('ok'); }, 2000);
+  });
+}
+
+function showLoad(t) {
+  document.getElementById('loadBox').style.display = 'block';
+  document.getElementById('loadTxt').textContent = t;
+  document.getElementById('btnProses').disabled = true;
+  document.getElementById('outputWrap').style.display = 'none';
+}
+function hideLoad() {
+  document.getElementById('loadBox').style.display = 'none';
+  document.getElementById('btnProses').disabled = false;
+}
+function setLoad(t) { document.getElementById('loadTxt').textContent = t; }
+function showErr(m) { const e = document.getElementById('errBox'); e.textContent = m; e.style.display = 'block'; }
+function hideErr() { document.getElementById('errBox').style.display = 'none'; }
+
+window.onload = loadKeys;
+</script>
+</body>
+</html>
