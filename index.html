@@ -533,7 +533,7 @@ function saveApiWeb() {
 async function testPing() {
   const status = document.getElementById('awStatus');
   if (!apiEndpoint) { showAwStatus('err', 'Endpoint belum diisi.'); return; }
-  const pingUrl = apiEndpoint.replace('/submit','').replace('/loker','') + '/loker/ping';
+  const pingUrl = apiEndpoint.replace('/loker/submit', '/loker/ping');
   try {
     showAwStatus('ok', '⏳ Testing...');
     const res = await fetch(pingUrl, {method:'GET'});
