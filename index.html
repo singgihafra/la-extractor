@@ -211,7 +211,7 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
     <div class="aw-title">🌐 Koneksi Website Loker Arsitek</div>
     <div class="aw-row">
       <div class="aw-label">Endpoint</div>
-      <input class="aw-input" id="apiEndpoint" type="text" placeholder="http://127.0.0.1:8000/api/loker/submit" />
+      <input class="aw-input" id="apiEndpoint" type="text" placeholder="https://lokerarsitek.com/api/loker/submit" />
     </div>
     <div class="aw-row">
       <div class="aw-label">API Key</div>
@@ -571,7 +571,7 @@ function loadKeys() {
     document.getElementById('keyInfo').innerHTML=`<span>${keys.length} key</span> tersimpan · fallback aktif`;
   }
   // Load API website
-  apiEndpoint = localStorage.getItem('la_api_endpoint') || 'http://127.0.0.1:8000/api/loker/submit';
+  apiEndpoint = localStorage.getItem('la_api_endpoint') || 'https://lokerarsitek.com/api/loker/submit';
   apiWebKey   = localStorage.getItem('la_api_key') || '';
   document.getElementById('apiEndpoint').value = apiEndpoint;
   document.getElementById('apiWebKey').value   = apiWebKey;
