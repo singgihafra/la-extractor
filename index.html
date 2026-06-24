@@ -181,7 +181,7 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
 <div class="header">
   <div class="logo">LA</div>
   <div>
-    <div class="header-title">Poster Extractor <span style="font-size:10px;font-weight:500;opacity:0.6;letter-spacing:0.5px">v2.5</span></div>
+    <div class="header-title">Poster Extractor <span style="font-size:10px;font-weight:500;opacity:0.6;letter-spacing:0.5px">v2.6</span></div>
     <div class="header-sub">Auto-isi form lowongan dari foto poster · Update 24 Jun 2026</div>
   </div>
 </div>
@@ -355,6 +355,7 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
       <div class="tab active" onclick="switchTab('web')">📋 Lowongan</div>
       <div class="tab" id="tabPerusahaan" onclick="switchTab('perusahaan')" style="display:none">🏢 Perusahaan</div>
       <div class="tab" onclick="switchTab('ig')">📱 Caption IG</div>
+      <div class="tab" onclick="switchTab('blog')">✍️ Blog</div>
     </div>
 
     <!-- TAB LOWONGAN -->
@@ -462,9 +463,69 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
         <button class="btn-copy-cap" id="btnCopyCap" onclick="cpCap()">Copy Caption</button>
       </div>
     </div>
-  </div>
 
-</div>
+    <!-- TAB BLOG -->
+    <div class="tab-content" id="tab-blog">
+      <div style="display:flex;flex-direction:column;gap:12px">
+
+        <!-- Input teks carousel -->
+        <div class="card">
+          <div class="card-title">📋 Paste Teks Carousel IG</div>
+          <textarea id="blogInput" rows="8" placeholder="Paste hasil scrape carousel Instagram di sini (teks dari Claude Chrome extension)..." style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px;font-size:12px;font-family:inherit;resize:vertical;outline:none;box-sizing:border-box"></textarea>
+          <button onclick="generateBlog()" class="btn-primary" style="margin-top:8px;width:100%">✨ Generate Artikel</button>
+          <div id="blogLoad" style="display:none;text-align:center;padding:10px;font-size:12px;color:var(--muted)">⏳ Generating artikel...</div>
+          <div id="blogErr" style="display:none;color:#e53e3e;font-size:12px;margin-top:6px"></div>
+        </div>
+
+        <!-- Preview hasil -->
+        <div class="card" id="blogPreview" style="display:none">
+          <div class="card-title">👁️ Preview Artikel</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:3px">JUDUL</div>
+              <input id="blogJudul" type="text" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;font-weight:600;font-family:inherit;outline:none;box-sizing:border-box">
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:3px">KATEGORI</div>
+              <select id="blogKategori" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;font-family:inherit;outline:none">
+                <option value="Tips Arsitektur">Tips Arsitektur</option>
+                <option value="Tips Karir">Tips Karir</option>
+                <option value="Tools & Gear">Tools & Gear</option>
+                <option value="Portofolio & CV">Portofolio & CV</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:3px">META DESKRIPSI</div>
+              <input id="blogMeta" type="text" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;font-family:inherit;outline:none;box-sizing:border-box">
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:3px">KEYWORD</div>
+              <input id="blogKeyword" type="text" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;font-family:inherit;outline:none;box-sizing:border-box">
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:3px">KONTEN ARTIKEL</div>
+              <textarea id="blogKonten" rows="12" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:10px;font-size:12px;font-family:inherit;resize:vertical;outline:none;box-sizing:border-box"></textarea>
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:3px">THUMBNAIL (URL gambar atau kosongkan)</div>
+              <input id="blogGambar" type="text" placeholder="https://drive.google.com/..." style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;font-family:inherit;outline:none;box-sizing:border-box">
+            </div>
+            <div style="display:flex;gap:8px">
+              <button onclick="submitBlog('draft')" style="flex:1;padding:10px;background:#f0f0f0;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">💾 Simpan Draft</button>
+              <button onclick="submitBlog('published')" style="flex:1;padding:10px;background:var(--teal);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">🚀 Langsung Publish</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hasil submit -->
+        <div id="blogResult" style="display:none" class="card">
+          <div class="card-title">✅ Artikel Tersimpan</div>
+          <div id="blogResultInfo" style="font-size:12px;color:var(--muted);margin-bottom:8px"></div>
+          <a id="blogEditLink" href="#" target="_blank" style="display:inline-block;padding:8px 14px;background:var(--amber);color:white;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none">✏️ Edit di Dashboard</a>
+        </div>
+
+      </div>
+    </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async></script>
@@ -881,7 +942,7 @@ function showUrlField(id,url,hintId){
   document.getElementById(hintId).style.display='none';
 }
 function switchTab(id){
-  const tabs=['web','perusahaan','ig'];
+  const tabs=['web','perusahaan','ig','blog'];
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===id));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
@@ -1305,6 +1366,98 @@ function showErr(m){const e=document.getElementById('errBox');e.textContent=m;e.
 function hideErr(){document.getElementById('errBox').style.display='none';}
 
 window.onload=loadKeys;
-</script>
+// ── BLOG GENERATOR ──
+async function generateBlog() {
+  const input = document.getElementById('blogInput').value.trim();
+  if (!input) { document.getElementById('blogErr').textContent = 'Paste teks carousel dulu.'; document.getElementById('blogErr').style.display='block'; return; }
+  if (!keys.length) { document.getElementById('blogErr').textContent = 'Simpan API key OpenAI dulu.'; document.getElementById('blogErr').style.display='block'; return; }
+  document.getElementById('blogErr').style.display='none';
+  document.getElementById('blogLoad').style.display='block';
+  document.getElementById('blogPreview').style.display='none';
+  document.getElementById('blogResult').style.display='none';
+
+  const prompt = `Kamu adalah content writer untuk blog lokerarsitek.com — portal lowongan kerja arsitek, interior designer, dan drafter Indonesia.
+
+Tugas: Ubah teks carousel Instagram berikut menjadi artikel blog lengkap dalam Bahasa Indonesia.
+
+TEKS CAROUSEL:
+${input}
+
+Buat artikel dengan format JSON (HANYA JSON, tanpa markdown backtick):
+{
+  "judul": "judul artikel 50-60 karakter, mengandung keyword SEO",
+  "kategori": "Tips Arsitektur atau Tips Karir atau Tools & Gear atau Portofolio & CV",
+  "meta": "meta deskripsi 120-155 karakter untuk SEO",
+  "keyword": "kata kunci utama, pisah koma, max 5 keyword",
+  "konten": "konten HTML lengkap dengan tag <h2>, <p>, <ul><li>, <strong>. Minimal 600 kata. Akhiri dengan CTA ke lokerarsitek.com"
+}`;
+
+  try {
+    const key = keys[Math.floor(Math.random()*keys.length)];
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        max_tokens: 2000,
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'API error');
+    let text = data.choices[0].message.content.trim();
+    text = text.replace(/```json|```/g, '').trim();
+    const article = JSON.parse(text);
+
+    document.getElementById('blogJudul').value = article.judul || '';
+    document.getElementById('blogKategori').value = article.kategori || 'Tips Arsitektur';
+    document.getElementById('blogMeta').value = article.meta || '';
+    document.getElementById('blogKeyword').value = article.keyword || '';
+    document.getElementById('blogKonten').value = article.konten || '';
+    document.getElementById('blogGambar').value = '';
+    document.getElementById('blogPreview').style.display = 'block';
+  } catch(e) {
+    document.getElementById('blogErr').textContent = 'Error: ' + e.message;
+    document.getElementById('blogErr').style.display = 'block';
+  }
+  document.getElementById('blogLoad').style.display = 'none';
+}
+
+async function submitBlog(status) {
+  if (!apiEndpoint || !apiWebKey) { alert('Isi endpoint & API key website dulu di tab Koneksi.'); return; }
+  const body = {
+    judul:    document.getElementById('blogJudul').value.trim(),
+    konten:   document.getElementById('blogKonten').value.trim(),
+    kategori: document.getElementById('blogKategori').value,
+    meta:     document.getElementById('blogMeta').value.trim(),
+    keyword:  document.getElementById('blogKeyword').value.trim(),
+    gambar:   document.getElementById('blogGambar').value.trim() || undefined,
+    status:   status,
+  };
+  if (!body.judul || !body.konten) { alert('Judul dan konten wajib diisi.'); return; }
+
+  const endpoint = apiEndpoint.replace('/api/loker/submit', '/api/blog/submit');
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-API-Key': apiWebKey },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (data.status === 'success') {
+      document.getElementById('blogResultInfo').textContent = `Artikel "${data.data.judul}" berhasil disimpan sebagai ${data.data.status}.`;
+      document.getElementById('blogEditLink').href = data.data.edit_url;
+      document.getElementById('blogResult').style.display = 'block';
+      document.getElementById('blogPreview').style.display = 'none';
+    } else {
+      alert('Gagal: ' + (data.message || 'Error tidak diketahui'));
+    }
+  } catch(e) {
+    alert('Error koneksi: ' + e.message);
+  }
+}
+
+
 </body>
 </html>
